@@ -1,0 +1,103 @@
+
+   body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+}
+
+.navbar {
+  display: flex;
+  background-color: #333;
+  padding: 10px 20px;
+  color: white;
+  gap: 20px;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* Layout wrapper for sidebar + main */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar styles */
+.sidebar {
+  width: 250px;
+  background: #a11e1e;
+  padding: 20px;
+  color: white;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main content */
+.main {
+  flex-grow: 1;
+  padding: 20px;
+}
+    .menu-item {
+        margin-bottom: 10px;
+      }
+    .dropdown {
+        margin-left: 10px;
+      }
+    .activity-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+      }
+    .candidate-info {
+        margin-bottom: 20px;
+      }
+    .score-select {
+        width: 100px;
+      }
+   
+.activity-description {
+  display: inline-block;
+  max-height: 50vh;             /* Limit to half of viewport height */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  vertical-align: top;
+  max-width: 70%;               /* Prevent it from taking over the row */
+  transition: max-height 0.3s ease, white-space 0.3s ease;
+}
+
+.activity-description.expanded {
+  white-space: normal;
+  max-height: none;
+}
+
+
+.sidebar.collapsed {
+  width: 0;
+  padding: 0;
+  overflow: hidden;
+  transition: width 0.3s ease, padding 0.3s ease;
+}
+
+.main.expanded {
+  flex-grow: 1;
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+
+.candidate-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.candidate-info {
+  display: flex;
+  align-items: center;  /* vertically centers all items in the row */
+  gap: 20px;            /* adds spacing between elements */
+  flex-wrap: wrap;      /* optional: wrap items if screen is too small */
+}
+      
