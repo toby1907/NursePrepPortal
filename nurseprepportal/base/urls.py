@@ -4,5 +4,5 @@ from .views import save_scores
 
 urlpatterns = [
      path('',views.dashboard,name="dashboard"),
-     path('save-scores/', save_scores, name='save_scores'), 
+     path('save-scores/', views.save_scores, name='save_scores'), 
 ]

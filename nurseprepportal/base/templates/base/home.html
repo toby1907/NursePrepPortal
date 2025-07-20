@@ -1,335 +1,66 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
 
- {% extends 'main.html' %}
- <!-- {% include 'navbar.html'%} -->
- {% block content %}
+<h2>{{ selected_station.name }}</h2>
 
-<!-- <style>
-    .home-container {
-        display: grid;
-        grid-template-columns: 1fr 3fr 1fr;
-    }
-</style> -->
+<div class="candidate-info">
+  <label for="searchInput">Search candidate:</label>
+  <input type="text" id="searchInput" placeholder="Type to search..." />
 
-      <h2>Station 1</h2>
-      
-      <div class="candidate-info">
-        <label for="searchSelect">Search candidate:</label>
-        <input type="text" id="searchInput" placeholder="Type to search..." />
-        <select id="candidateSelect" size="6">
-            <option value="CLU200317-365">CLU200317-365</option>
-            <option value="CLU200317-404">CLU200317-404</option>
-            <option value="CLU200317-423">CLU200317-423</option>
-            <option value="CLU200317-427">CLU200317-427</option>
-            <option value="CLU200317-467">CLU200317-467</option>
-            <option value="CLU200317-472">CLU200317-472</option>
-            <option value="CLU200317-577">CLU200317-577</option>
-            <option value="CLU200317371">CLU200317371</option>
-            <option value="NSC/2021/003">NSC/2021/003</option>
-            <option value="NSC/2021/004">NSC/2021/004</option>
-            <option value="NSC/2021/005">NSC/2021/005</option>
-            <option value="NSC/2021/007">NSC/2021/007</option>
-            <option value="NSC/2021/008">NSC/2021/008</option>
-            <option value="NSC/2021/009">NSC/2021/009</option>
-            <option value="NSC/2021/011">NSC/2021/011</option>
-            <option value="NSC/2021/012">NSC/2021/012</option>
-            <option value="NSC/2021/014">NSC/2021/014</option>
-            <option value="NSC/2021/015">NSC/2021/015</option>
-            <option value="NSC/2021/016">NSC/2021/016</option>
-            <option value="NSC/2021/017">NSC/2021/017</option>
-            <option value="NSC/2021/019">NSC/2021/019</option>
-            <option value="NSC/2021/021">NSC/2021/021</option>
-            <option value="NSC/2021/022">NSC/2021/022</option>
-            <option value="NSC/2021/023">NSC/2021/023</option>
-            <option value="NSC/2021/024">NSC/2021/024</option>
-            <option value="NSC/2021/025">NSC/2021/025</option>
-            <option value="NSC/2021/026">NSC/2021/026</option>
-            <option value="NSC/2021/027">NSC/2021/027</option>
-            <option value="NSC/2021/028">NSC/2021/028</option>
-            <option value="NSC/2021/030">NSC/2021/030</option>
-            <option value="NSC/2021/031">NSC/2021/031</option>
-            <option value="NSC/2021/033">NSC/2021/033</option>
-            <option value="NSC/2021/037">NSC/2021/037</option>
-            <option value="NSC/2021/039">NSC/2021/039</option>
-            <option value="NSC/2021/040">NSC/2021/040</option>
-            <option value="NSC/2021/042">NSC/2021/042</option>
-            <option value="NSC/2021/043">NSC/2021/043</option>
-            <option value="NSC/2021/045">NSC/2021/045</option>
-            <option value="NSC/2021/046">NSC/2021/046</option>
-            <option value="NSC/2021/047">NSC/2021/047</option>
-            <option value="NSC/2021/048">NSC/2021/048</option>
-            <option value="NSC/2021/049">NSC/2021/049</option>
-            <option value="NSC/2021/053">NSC/2021/053</option>
-            <option value="NSC/2022/039">NSC/2022/039</option>
-            <option value="NSC/2022/090">NSC/2022/090</option>
-            <option value="NSC/2022/107">NSC/2022/107</option>
-            <option value="NSC/2022/125">NSC/2022/125</option>
-            <option value="NSC/2022/133">NSC/2022/133</option>
-            <option value="NSC/2022/134">NSC/2022/134</option>
-            <option value="NSC/2022/149">NSC/2022/149</option>
-            <option value="NSC/2022/150">NSC/2022/150</option>
+  <form method="get" id="candidateForm">
+    <select name="matric_number" id="candidateSelect" size="5" onchange="document.getElementById('candidateForm').submit()">
+      {% for candidate in candidates %}
+        <option value="{{ candidate.matric_number }}" {% if selected_candidate and selected_candidate.matric_number == candidate.matric_number %}selected{% endif %}>
+          {{ candidate.matric_number }}
+        </option>
+      {% endfor %}
+    </select>
+    {% if selected_station %}
+  <input type="hidden" name="station_id" value="{{ selected_station.id }}">
+{% elif stations and stations|length > 0 %}
+  <input type="hidden" name="station_id" value="{{ stations.0.id }}">
+{% endif %}
 
-        </select>
-        <div class="candidate-summary">
-        <div>
-            <strong>Candidate Info:</strong>
-            <p id="matricDisplay">Matric Number: [Selected]</p>
-        </div>
-        {% load static %}
-        <img alt="Passport" src="{% static 'images/user.png' %}" width="100" />
-        </div>
+  </form>
 
-      </div>
-      <div class="activities">
-        <h3>Activities</h3>
+  <div class="candidate-summary">
+    <div>
+      <strong>Candidate Info:</strong>
+      <p id="matricDisplay">Matric Number: {{ selected_candidate.matric_number|default:"[Selected]" }}</p>
+    </div>
+    <img alt="Passport" src="{% static 'images/user.png' %}" width="100" />
+  </div>
+</div>
+
+<div class="activities">
+  <h3>Activities</h3>
+  {% if selected_candidate and selected_station %}
+    <form method="POST" action="{% url 'save_scores' %}">
+      {% csrf_token %}
+      <input type="hidden" name="matric_number" value="{{ selected_candidate.matric_number }}">
+      <input type="hidden" name="station_id" value="{{ selected_station.id }}">
+      {% for activity in activities %}
         <div class="activity-row">
-          <span
-            >Explain the procedure to the client and obtains consent (1/2
-            mark)</span
-          ><span>Max: 0.5</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-            <option value="0.25">0.25</option>
-            <option value="0.5">0.5</option>
+          <span>{{ activity.description }}</span>
+          <span>Max: {{ activity.max_score }}</span>
+          <select name="score_{{ activity.activity_id }}" class="score-select" data-activity-id="{{ activity.activity_id }}">
+            {% for option in activity.options %}
+              <option value="{{ option }}" {% if option == activity.score %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
           </select>
         </div>
-        <div class="activity-row">
-          <span>Bring necessary equipment to the client’s bedside (¼mk)</span
-          ><span>Max: 0.0</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span>Wash hands thoroughly (¼mk) </span><span>Max: 0.0</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span
-            >Position the client supine with knees flexed and legs laterally
-            rotated (1/2mk)</span
-          ><span>Max: 0.5</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-            <option value="0.25">0.25</option>
-            <option value="0.5">0.5</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span
-            >Drape the client with a sheet so that only the perineum is exposed
-            (1/2mk)</span
-          ><span>Max: 0.5</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-            <option value="0.25">0.25</option>
-            <option value="0.5">0.5</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span
-            >Position light source directly on the exposed perineum
-            (1/4mk)</span
-          ><span>Max: 0.25</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-            <option value="0.25">0.25</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span>Slide the waterproof drape under the client (1/4mk)</span
-          ><span>Max: 0.25</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-            <option value="0.25">0.25</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span
-            >Open the sterile catheterization pack on the tray using sterile
-            techniques (1/2mk)</span
-          ><span>Max: 0.5</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-            <option value="0.25">0.25</option>
-            <option value="0.5">0.5</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span>Put on sterile gloves (1/4mk)</span><span>Max: 0.25</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-            <option value="0.25">0.25</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span
-            >Place the sterile tray on the tray between the client’s thighs
-            (1/4mk)</span
-          ><span>Max: 0.25</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-            <option value="0.25">0.25</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span
-            >Test the catheter balloon by connecting the syringe to the balloon
-            port and insert the correct amount of fluid, inflating the balloon
-            (1mk)</span
-          ><span>Max: 1.0</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-            <option value="0.25">0.25</option>
-            <option value="0.5">0.5</option>
-            <option value="0.75">0.75</option>
-            <option value="1.0">1.0</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span
-            >Connect the drainage end of catheter to the urine bag (1/2mk)</span
-          ><span>Max: 0.5</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-            <option value="0.25">0.25</option>
-            <option value="0.5">0.5</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span
-            >Lubricate the tip of the catheter (about 1-2 inches) (1/2mk)</span
-          ><span>Max: 1.0</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-            <option value="0.25">0.25</option>
-            <option value="0.5">0.5</option>
-            <option value="0.75">0.75</option>
-            <option value="1.0">1.0</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span
-            >Using cotton balls held with forceps, clean both labia folds and
-            directly over the meatus (1/2mk)</span
-          ><span>Max: 0.5</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-            <option value="0.25">0.25</option>
-            <option value="0.5">0.5</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span
-            >Ask the client to take a deep breath and release it slowly as you
-            begin insertion ½</span
-          ><span>Max: 0.0</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span>Inserts catheter into the urethral opening correctly 1</span
-          ><span>Max: 1.0</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-            <option value="0.25">0.25</option>
-            <option value="0.5">0.5</option>
-            <option value="0.75">0.75</option>
-            <option value="1.0">1.0</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span>Inflate the balloon port with 10ml of water ½</span
-          ><span>Max: 10.0</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-            <option value="0.25">0.25</option>
-            <option value="0.5">0.5</option>
-            <option value="0.75">0.75</option>
-            <option value="1.0">1.0</option>
-            <option value="1.25">1.25</option>
-            <option value="1.5">1.5</option>
-            <option value="1.75">1.75</option>
-            <option value="2.0">2.0</option>
-            <option value="2.25">2.25</option>
-            <option value="2.5">2.5</option>
-            <option value="2.75">2.75</option>
-            <option value="3.0">3.0</option>
-            <option value="3.25">3.25</option>
-            <option value="3.5">3.5</option>
-            <option value="3.75">3.75</option>
-            <option value="4.0">4.0</option>
-            <option value="4.25">4.25</option>
-            <option value="4.5">4.5</option>
-            <option value="4.75">4.75</option>
-            <option value="5.0">5.0</option>
-            <option value="5.25">5.25</option>
-            <option value="5.5">5.5</option>
-            <option value="5.75">5.75</option>
-            <option value="6.0">6.0</option>
-            <option value="6.25">6.25</option>
-            <option value="6.5">6.5</option>
-            <option value="6.75">6.75</option>
-            <option value="7.0">7.0</option>
-            <option value="7.25">7.25</option>
-            <option value="7.5">7.5</option>
-            <option value="7.75">7.75</option>
-            <option value="8.0">8.0</option>
-            <option value="8.25">8.25</option>
-            <option value="8.5">8.5</option>
-            <option value="8.75">8.75</option>
-            <option value="9.0">9.0</option>
-            <option value="9.25">9.25</option>
-            <option value="9.5">9.5</option>
-            <option value="9.75">9.75</option>
-            <option value="10.0">10.0</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span
-            >Tug gently on the catheter after inflation to feel resistance
-            ½</span
-          ><span>Max: 0.0</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span>Secure the catheter to the upper thigh with a tape ¼</span
-          ><span>Max: 0.0</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span>keeping the bag at or below the bladder level ½</span
-          ><span>Max: 0.0</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span
-            >Remove the equipment and make the client comfortable in bed ¼</span
-          ><span>Max: 0.0</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-          </select>
-        </div>
-        <div class="activity-row">
-          <span>Documents procedure ¼</span><span>Max: 0.0</span
-          ><select class="score-select">
-            <option value="0.0">0.0</option>
-          </select>
-        </div>
-      </div>
+      {% endfor %}
       <div>
-        <h4>Procedure Total: [Calculated]</h4>
-        <button>Save</button>
+        <h4>Procedure Total: <span id="totalScore">0.00</span></h4>
+        <button type="submit">Save Scores</button>
       </div>
-    
+    </form>
+  {% else %}
+    <p>Please select a candidate to view activities.</p>
+  {% endif %}
+</div>
+
 <script>
   const searchInput = document.getElementById('searchInput');
   const select = document.getElementById('candidateSelect');
@@ -347,6 +78,26 @@
     const selectedValue = this.value;
     display.textContent = `Matric Number: ${selectedValue}`;
   });
+
+  const scoreSelects = document.querySelectorAll('.score-select');
+  const totalScoreDisplay = document.getElementById('totalScore');
+
+  function calculateTotal() {
+    let total = 0;
+    scoreSelects.forEach(select => {
+      const value = parseFloat(select.value);
+      if (!isNaN(value)) {
+        total += value;
+      }
+    });
+    totalScoreDisplay.textContent = total.toFixed(2);
+  }
+
+  scoreSelects.forEach(select => {
+    select.addEventListener('change', calculateTotal);
+  });
+
+  calculateTotal();
 </script>
 
-{%endblock content%}
+{% endblock content %}
