@@ -1,0 +1,132 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+
+<form method="get" id="stationForm">
+  <label for="stationSelect">Select Station:</label>
+  <select name="station_id" id="stationSelect" onchange="document.getElementById('stationForm').submit()">
+    {% for station in stations %}
+      <option value="{{ station.id }}" {% if selected_station and selected_station.id == station.id %}selected{% endif %}>
+        {{ station.name }}
+      </option>
+    {% endfor %}
+  </select>
+
+  {% if selected_candidate %}
+    <input type="hidden" name="matric_number" value="{{ selected_candidate.matric_number }}">
+  {% endif %}
+</form>
+
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+<h2>{{ selected_station.name }}</h2>
+
+<div class="candidate-info">
+  <label for="searchInput">Search candidate:</label>
+  <input type="text" id="searchInput" placeholder="Type to search..." />
+
+  <form method="get" id="candidateForm">
+    <select name="matric_number" id="candidateSelect" size="5" onchange="document.getElementById('candidateForm').submit()">
+      {% for candidate in candidates %}
+        <option value="{{ candidate.matric_number }}" {% if selected_candidate and selected_candidate.matric_number == candidate.matric_number %}selected{% endif %}>
+          {{ candidate.matric_number }}
+        </option>
+      {% endfor %}
+    </select>
+    {% if selected_station %}
+  <input type="hidden" name="station_id" value="{{ selected_station.id }}">
+{% elif stations and stations|length > 0 %}
+  <input type="hidden" name="station_id" value="{{ stations.0.id }}">
+{% endif %}
+
+  </form>
+
+  <div class="candidate-summary">
+    <div>
+      <strong>Candidate Info:</strong>
+      <p id="matricDisplay">Matric Number: {{ selected_candidate.matric_number|default:"[Selected]" }}</p>
+    </div>
+  {% if selected_candidate and selected_candidate.passport %}
+  <img src="{{ selected_candidate.passport.url }}" width="100" alt="Passport">
+{% else %}
+  <img src="{% static 'images/user.png' %}" width="100" alt="Default Passport">
+{% endif %}
+  </div>
+</div>
+
+<div class="activities">
+  <h3>Activities</h3>
+  {% if selected_candidate and selected_station %}
+    <form method="POST" action="{% url 'save_scores' %}">
+      {% csrf_token %}
+      <input type="hidden" name="matric_number" value="{{ selected_candidate.matric_number }}">
+      <input type="hidden" name="station_id" value="{{ selected_station.id }}">
+      {% for activity in activities %}
+  <div class="activity-row">
+    <span>{{ activity.description }}</span>
+    <span>Max: {{ activity.max_score }}</span>
+    <select name="score_{{ activity.activity_id }}" class="score-select" data-activity-id="{{ activity.activity_id }}">
+      {% for option in activity.options %}
+        <option value="{{ option }}" {% if option == activity.score %}selected{% endif %}>{{ option }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <hr class="activity-divider">
+{% endfor %}
+
+      <div>
+        <h4>Procedure Total: <span id="totalScore">0.00</span></h4>
+        <button type="submit">Save Scores</button>
+      </div>
+    </form>
+  {% else %}
+    <p>Please select a candidate to view activities.</p>
+  {% endif %}
+</div>
+
+<script>
+  const searchInput = document.getElementById('searchInput');
+  const select = document.getElementById('candidateSelect');
+  const display = document.getElementById('matricDisplay');
+
+  searchInput.addEventListener('input', function () {
+    const searchTerm = this.value.toLowerCase();
+    Array.from(select.options).forEach(option => {
+      const match = option.text.toLowerCase().includes(searchTerm);
+      option.style.display = match ? 'block' : 'none';
+    });
+  });
+
+  select.addEventListener('change', function () {
+    const selectedValue = this.value;
+    display.textContent = `Matric Number: ${selectedValue}`;
+  });
+
+  const scoreSelects = document.querySelectorAll('.score-select');
+  const totalScoreDisplay = document.getElementById('totalScore');
+
+  function calculateTotal() {
+    let total = 0;
+    scoreSelects.forEach(select => {
+      const value = parseFloat(select.value);
+      if (!isNaN(value)) {
+        total += value;
+      }
+    });
+    totalScoreDisplay.textContent = total.toFixed(2);
+  }
+
+  scoreSelects.forEach(select => {
+    select.addEventListener('change', calculateTotal);
+  });
+
+  calculateTotal();
+</script>
+
+{% endblock content %}
