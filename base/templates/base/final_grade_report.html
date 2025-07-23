@@ -1,0 +1,40 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+
+<h2>Final Grade Report</h2>
+
+<table border="1" cellpadding="8" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Matric Number</th>
+      <th>Full Name</th>
+      {% for station in stations %}
+        <th>{{ station.name }}</th>
+      {% endfor %}
+      <th>Viva</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in report_data %}
+      <tr>
+        <td>{{ row.matric_number }}</td>
+        <td>{{ row.full_name }}</td>
+        {% for station_name, score in row.station_scores %}
+          <td>{{ score }}</td>
+        {% endfor %}
+        <td>{{ row.viva }}</td>
+        <td><strong>{{ row.total }}</strong></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<div><form method="post" action="{% url 'recalculate_grades' %}">
+  {% csrf_token %}
+  <button type="submit">Recalculate Grades</button>
+</form>
+<a href="{% url 'download_grade_report_pdf' %}" class="btn btn-primary">Download PDF</a>
+</div>
+
+{% endblock %}

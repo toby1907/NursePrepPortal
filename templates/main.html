@@ -45,14 +45,7 @@
 
   <body> 
     {% include 'navbar.html' %}
-     {% if messages %}
-  <ul class="messages">
-    {% for message in messages %}
-    <li {% if message.tags %} class="{{message.tags}}" {% endif %}>{{ message}}
-        {% endfor %}
-    </li>
-  </ul>
-  {% endif %}
+     
 
   <button id="toggleSidebar" style="margin: 10px;">☰</button>
     <div class="layout">
@@ -61,32 +54,48 @@
   <h3>Menu</h3>
 
   <div class="menu-item">
-    <strong class="dropdown-toggle" style="cursor:pointer;">Procedure</strong>
-    <div class="dropdown-content" style="display: none; margin-left: 10px;">
-      <ul>
-        {% if stations and selected_candidate %}
-          {% for station in stations %}
-            <li>
-              <a href="?matric_number={{ selected_candidate.matric_number }}&station_id={{ station.id }}"
-                 class="{% if selected_station and selected_station.id == station.id %}active{% endif %}">
-                {{ station.name }}
-              </a>
-            </li>
-          {% endfor %}
-        {% else %}
-          <li style="color: gray;">Select candidate to load stations</li>
-        {% endif %}
-      </ul>
-    </div>
+  <strong class="dropdown-toggle" style="cursor:pointer;">Procedure</strong>
+  <div class="dropdown-content" style="display: none; margin-left: 10px;">
+    <ul>
+      {% if stations %}
+        {% for station in stations %}
+          <li>
+            <a href="{% url 'dashboard' %}?station_id={{ station.id }}{% if selected_candidate %}&matric_number={{ selected_candidate.matric_number }}{% endif %}"
+              class="{% if selected_station and selected_station.id == station.id %}active{% endif %}">
+              {{ station.name }}
+            </a>
+
+          </li>
+        {% endfor %}
+      {% else %}
+        <li style="color: gray;">No stations available</li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
+
+
+  <div class="menu-item">
+  <a href="{% url 'viva_scores' %}"><strong>Viva</strong></a>
+  </div>
+  <div class="menu-item">
+  <a href="{% url 'final_grade_report' %}"><strong>Result</strong></a>
   </div>
 
-  <div class="menu-item"><strong>Viva</strong></div>
-  <div class="menu-item"><strong>Result</strong></div>
 </div>
 
 
       <div class="main">
+        {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+    <li {% if message.tags %} class="{{message.tags}}" {% endif %}>{{ message}}
+        {% endfor %}
+    </li>
+  </ul>
+  {% endif %}
         {% block content %}
+        
         {% endblock %}
       </div>
     </div>

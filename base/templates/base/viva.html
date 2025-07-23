@@ -1,0 +1,28 @@
+
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+
+<form method="post">
+    {% csrf_token %}
+    <table>
+        <tr>
+            <th>Matric Number</th>
+            <th>Full Name</th>
+            <th>Score (0–10)</th>
+        </tr>
+        {% for candidate in candidates %}
+        <tr>
+            <td>{{ candidate.matric_number }}</td>
+            <td>{{ candidate.full_name }}</td>
+            <td>
+                <input type="number" name="score_{{ candidate.id }}" min="0" max="10" step="0.1"
+                       value="{{ candidate.vivascore.score|default:'' }}">
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <button type="submit">Save Scores</button>
+</form>
+
+{% endblock content %}

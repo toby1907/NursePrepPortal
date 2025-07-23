@@ -17,13 +17,7 @@
   {% endif %}
 </form>
 
-{% if messages %}
-  <ul class="messages">
-    {% for message in messages %}
-      <li class="{{ message.tags }}">{{ message }}</li>
-    {% endfor %}
-  </ul>
-{% endif %}
+
 
 <h2>{{ selected_station.name }}</h2>
 
@@ -50,7 +44,7 @@
   <div class="candidate-summary">
     <div>
       <strong>Candidate Info:</strong>
-      <p id="matricDisplay">Matric Number: {{ selected_candidate.matric_number|default:"[Selected]" }}</p>
+      <p id="matricDisplay">Matric Number: {{ selected_candidate.matric_number|default:"[Non Selected]" }}</p>
     </div>
   {% if selected_candidate and selected_candidate.passport %}
   <img src="{{ selected_candidate.passport.url }}" width="100" alt="Passport">
