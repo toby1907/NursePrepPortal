@@ -1,77 +1,396 @@
-
 <!DOCTYPE html>
 
 <html>
-<head>
-<title>NursePrepPortal Dashboard</title>
-<style>
-        body { display: flex; font-family: Arial, sans-serif; }
-        .sidebar { width: 250px; background: #f0f0f0; padding: 20px; }
-        .main { flex-grow: 1; padding: 20px; }
-        .menu-item { margin-bottom: 10px; }
-        .dropdown { margin-left: 10px; }
-        .activity-row { display: flex; justify-content: space-between; margin-bottom: 5px; }
-        .candidate-info { margin-bottom: 20px; }
-        .score-select { width: 100px; }
+  <head>
+    <title>NursePrepPortal Dashboard</title>
+    <style>
+      body {
+        display: flex;
+        font-family: Arial, sans-serif;
+      }
+      .sidebar {
+        width: 250px;
+        background: #f0f0f0;
+        padding: 20px;
+      }
+      .main {
+        flex-grow: 1;
+        padding: 20px;
+      }
+      .menu-item {
+        margin-bottom: 10px;
+      }
+      .dropdown {
+        margin-left: 10px;
+      }
+      .activity-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+      }
+      .candidate-info {
+        margin-bottom: 20px;
+      }
+      .score-select {
+        width: 100px;
+      }
     </style>
-<style>
-.activity-description {
-    max-height: 3em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: max-height 0.3s ease;
-}
+    <style>
+      .activity-description {
+        max-height: 3em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: max-height 0.3s ease;
+      }
 
-.activity-description.expanded {
-    white-space: normal;
-    max-height: none;
-}
-</style></head>
-<body>
-<div class="sidebar">
-<h3>Menu</h3>
-<div class="menu-item">
-<strong>Procedure</strong>
-<div class="dropdown">
-<ul>
-<li>Station 1</li><li>Station 3</li><li>Station 5</li>
-</ul>
-</div>
-</div>
-<div class="menu-item"><strong>Viva</strong></div>
-<div class="menu-item"><strong>Result</strong></div>
-</div>
-<div class="main">
-<h2>Station 1</h2>
-<div class="candidate-info">
-<input placeholder="Search candidate..." type="text"/>
-<select>
-<option>CLU200317-365</option><option>CLU200317-404</option><option>CLU200317-423</option><option>CLU200317-427</option><option>CLU200317-467</option><option>CLU200317-472</option><option>CLU200317-577</option><option>CLU200317371</option><option>NSC/2021/003</option><option>NSC/2021/004</option><option>NSC/2021/005</option><option>NSC/2021/007</option><option>NSC/2021/008</option><option>NSC/2021/009</option><option>NSC/2021/011</option><option>NSC/2021/012</option><option>NSC/2021/014</option><option>NSC/2021/015</option><option>NSC/2021/016</option><option>NSC/2021/017</option><option>NSC/2021/019</option><option>NSC/2021/021</option><option>NSC/2021/022</option><option>NSC/2021/023</option><option>NSC/2021/024</option><option>NSC/2021/025</option><option>NSC/2021/026</option><option>NSC/2021/027</option><option>NSC/2021/028</option><option>NSC/2021/030</option><option>NSC/2021/031</option><option>NSC/2021/033</option><option>NSC/2021/037</option><option>NSC/2021/039</option><option>NSC/2021/040</option><option>NSC/2021/042</option><option>NSC/2021/043</option><option>NSC/2021/045</option><option>NSC/2021/046</option><option>NSC/2021/047</option><option>NSC/2021/048</option><option>NSC/2021/049</option><option>NSC/2021/053</option><option>NSC/2022/039</option><option>NSC/2022/090</option><option>NSC/2022/107</option><option>NSC/2022/125</option><option>NSC/2022/133</option><option>NSC/2022/134</option><option>NSC/2022/149</option><option>NSC/2022/150</option>
-</select>
-<div>
-<strong>Candidate Info:</strong>
-<p>Matric Number: [Selected]</p>
-<img alt="Passport" src="/media/passports/sample.jpg" width="100"/>
-</div>
-</div>
-<div class="activities">
-<h3>Activities</h3>
-<div class="activity-row"><span>Explain the procedure to the client and obtains consent (1/2 mark)</span><span>Max: 0.5</span><select class="score-select"><option value="0.0">0.0</option><option value="0.25">0.25</option><option value="0.5">0.5</option></select></div><div class="activity-row"><span>Bring necessary equipment to the client’s bedside       (¼mk)</span><span>Max: 0.0</span><select class="score-select"><option value="0.0">0.0</option></select></div><div class="activity-row"><span>Wash hands thoroughly        (¼mk)                                </span><span>Max: 0.0</span><select class="score-select"><option value="0.0">0.0</option></select></div><div class="activity-row"><span>Position the client supine with knees flexed and legs laterally rotated (1/2mk)</span><span>Max: 0.5</span><select class="score-select"><option value="0.0">0.0</option><option value="0.25">0.25</option><option value="0.5">0.5</option></select></div><div class="activity-row"><span>Drape the client with a sheet so that only the perineum is exposed (1/2mk)</span><span>Max: 0.5</span><select class="score-select"><option value="0.0">0.0</option><option value="0.25">0.25</option><option value="0.5">0.5</option></select></div><div class="activity-row"><span>Position light source directly on the exposed perineum (1/4mk)</span><span>Max: 0.25</span><select class="score-select"><option value="0.0">0.0</option><option value="0.25">0.25</option></select></div><div class="activity-row"><span>Slide the waterproof drape under the client (1/4mk)</span><span>Max: 0.25</span><select class="score-select"><option value="0.0">0.0</option><option value="0.25">0.25</option></select></div><div class="activity-row"><span>Open the sterile catheterization pack on the tray using sterile techniques (1/2mk)</span><span>Max: 0.5</span><select class="score-select"><option value="0.0">0.0</option><option value="0.25">0.25</option><option value="0.5">0.5</option></select></div><div class="activity-row"><span>Put on sterile gloves (1/4mk)</span><span>Max: 0.25</span><select class="score-select"><option value="0.0">0.0</option><option value="0.25">0.25</option></select></div><div class="activity-row"><span>Place the sterile tray on the tray between the client’s thighs (1/4mk)</span><span>Max: 0.25</span><select class="score-select"><option value="0.0">0.0</option><option value="0.25">0.25</option></select></div><div class="activity-row"><span>Test the catheter balloon by connecting the syringe to the balloon port and insert the correct amount of fluid, inflating the balloon (1mk)</span><span>Max: 1.0</span><select class="score-select"><option value="0.0">0.0</option><option value="0.25">0.25</option><option value="0.5">0.5</option><option value="0.75">0.75</option><option value="1.0">1.0</option></select></div><div class="activity-row"><span>Connect the drainage end of catheter to the urine bag (1/2mk)</span><span>Max: 0.5</span><select class="score-select"><option value="0.0">0.0</option><option value="0.25">0.25</option><option value="0.5">0.5</option></select></div><div class="activity-row"><span>Lubricate the tip of the catheter (about 1-2 inches) (1/2mk)</span><span>Max: 1.0</span><select class="score-select"><option value="0.0">0.0</option><option value="0.25">0.25</option><option value="0.5">0.5</option><option value="0.75">0.75</option><option value="1.0">1.0</option></select></div><div class="activity-row"><span>Using cotton balls held with forceps, clean both labia folds and directly over the meatus (1/2mk)</span><span>Max: 0.5</span><select class="score-select"><option value="0.0">0.0</option><option value="0.25">0.25</option><option value="0.5">0.5</option></select></div><div class="activity-row"><span>Ask the client to take a deep breath and release it slowly as you begin insertion     ½</span><span>Max: 0.0</span><select class="score-select"><option value="0.0">0.0</option></select></div><div class="activity-row"><span>Inserts catheter into the urethral opening correctly    1</span><span>Max: 1.0</span><select class="score-select"><option value="0.0">0.0</option><option value="0.25">0.25</option><option value="0.5">0.5</option><option value="0.75">0.75</option><option value="1.0">1.0</option></select></div><div class="activity-row"><span>Inflate the balloon port with 10ml of water     ½</span><span>Max: 10.0</span><select class="score-select"><option value="0.0">0.0</option><option value="0.25">0.25</option><option value="0.5">0.5</option><option value="0.75">0.75</option><option value="1.0">1.0</option><option value="1.25">1.25</option><option value="1.5">1.5</option><option value="1.75">1.75</option><option value="2.0">2.0</option><option value="2.25">2.25</option><option value="2.5">2.5</option><option value="2.75">2.75</option><option value="3.0">3.0</option><option value="3.25">3.25</option><option value="3.5">3.5</option><option value="3.75">3.75</option><option value="4.0">4.0</option><option value="4.25">4.25</option><option value="4.5">4.5</option><option value="4.75">4.75</option><option value="5.0">5.0</option><option value="5.25">5.25</option><option value="5.5">5.5</option><option value="5.75">5.75</option><option value="6.0">6.0</option><option value="6.25">6.25</option><option value="6.5">6.5</option><option value="6.75">6.75</option><option value="7.0">7.0</option><option value="7.25">7.25</option><option value="7.5">7.5</option><option value="7.75">7.75</option><option value="8.0">8.0</option><option value="8.25">8.25</option><option value="8.5">8.5</option><option value="8.75">8.75</option><option value="9.0">9.0</option><option value="9.25">9.25</option><option value="9.5">9.5</option><option value="9.75">9.75</option><option value="10.0">10.0</option></select></div><div class="activity-row"><span>Tug gently on the catheter after inflation to feel resistance  ½</span><span>Max: 0.0</span><select class="score-select"><option value="0.0">0.0</option></select></div><div class="activity-row"><span>Secure the catheter to the upper thigh with a tape      ¼</span><span>Max: 0.0</span><select class="score-select"><option value="0.0">0.0</option></select></div><div class="activity-row"><span>keeping the bag at or below the bladder level     ½</span><span>Max: 0.0</span><select class="score-select"><option value="0.0">0.0</option></select></div><div class="activity-row"><span>Remove the equipment and make the client comfortable in bed     ¼</span><span>Max: 0.0</span><select class="score-select"><option value="0.0">0.0</option></select></div><div class="activity-row"><span>Documents procedure       ¼</span><span>Max: 0.0</span><select class="score-select"><option value="0.0">0.0</option></select></div>
-</div>
-<div>
-<h4>Procedure Total: [Calculated]</h4>
-<button>Save</button>
-</div>
-</div>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    document.querySelectorAll('.activity-description').forEach(function(el) {
-        el.addEventListener('click', function() {
-            el.classList.toggle('expanded');
-        });
-    });
-});
-</script></body>
+      .activity-description.expanded {
+        white-space: normal;
+        max-height: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <h3>Menu</h3>
+      <div class="menu-item">
+        <strong>Procedure</strong>
+        <div class="dropdown">
+          <ul>
+            <li>Station 1</li>
+            <li>Station 3</li>
+            <li>Station 5</li>
+          </ul>
+        </div>
+      </div>
+      <div class="menu-item"><strong>Viva</strong></div>
+      <div class="menu-item"><strong>Result</strong></div>
+    </div>
+    <div class="main">
+      <h2>Station 1</h2>
+      <div class="candidate-info">
+        <input placeholder="Search candidate..." type="text" />
+        <select>
+          <option>CLU200317-365</option>
+          <option>CLU200317-404</option>
+          <option>CLU200317-423</option>
+          <option>CLU200317-427</option>
+          <option>CLU200317-467</option>
+          <option>CLU200317-472</option>
+          <option>CLU200317-577</option>
+          <option>CLU200317371</option>
+          <option>NSC/2021/003</option>
+          <option>NSC/2021/004</option>
+          <option>NSC/2021/005</option>
+          <option>NSC/2021/007</option>
+          <option>NSC/2021/008</option>
+          <option>NSC/2021/009</option>
+          <option>NSC/2021/011</option>
+          <option>NSC/2021/012</option>
+          <option>NSC/2021/014</option>
+          <option>NSC/2021/015</option>
+          <option>NSC/2021/016</option>
+          <option>NSC/2021/017</option>
+          <option>NSC/2021/019</option>
+          <option>NSC/2021/021</option>
+          <option>NSC/2021/022</option>
+          <option>NSC/2021/023</option>
+          <option>NSC/2021/024</option>
+          <option>NSC/2021/025</option>
+          <option>NSC/2021/026</option>
+          <option>NSC/2021/027</option>
+          <option>NSC/2021/028</option>
+          <option>NSC/2021/030</option>
+          <option>NSC/2021/031</option>
+          <option>NSC/2021/033</option>
+          <option>NSC/2021/037</option>
+          <option>NSC/2021/039</option>
+          <option>NSC/2021/040</option>
+          <option>NSC/2021/042</option>
+          <option>NSC/2021/043</option>
+          <option>NSC/2021/045</option>
+          <option>NSC/2021/046</option>
+          <option>NSC/2021/047</option>
+          <option>NSC/2021/048</option>
+          <option>NSC/2021/049</option>
+          <option>NSC/2021/053</option>
+          <option>NSC/2022/039</option>
+          <option>NSC/2022/090</option>
+          <option>NSC/2022/107</option>
+          <option>NSC/2022/125</option>
+          <option>NSC/2022/133</option>
+          <option>NSC/2022/134</option>
+          <option>NSC/2022/149</option>
+          <option>NSC/2022/150</option>
+        </select>
+        <div>
+          <strong>Candidate Info:</strong>
+          <p>Matric Number: [Selected]</p>
+          <img alt="Passport" src="/media/passports/sample.jpg" width="100" />
+        </div>
+      </div>
+      <div class="activities">
+        <h3>Activities</h3>
+        <div class="activity-row">
+          <span
+            >Explain the procedure to the client and obtains consent (1/2
+            mark)</span
+          ><span>Max: 0.5</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+            <option value="0.25">0.25</option>
+            <option value="0.5">0.5</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span>Bring necessary equipment to the client’s bedside (¼mk)</span
+          ><span>Max: 0.0</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span>Wash hands thoroughly (¼mk) </span><span>Max: 0.0</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span
+            >Position the client supine with knees flexed and legs laterally
+            rotated (1/2mk)</span
+          ><span>Max: 0.5</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+            <option value="0.25">0.25</option>
+            <option value="0.5">0.5</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span
+            >Drape the client with a sheet so that only the perineum is exposed
+            (1/2mk)</span
+          ><span>Max: 0.5</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+            <option value="0.25">0.25</option>
+            <option value="0.5">0.5</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span
+            >Position light source directly on the exposed perineum
+            (1/4mk)</span
+          ><span>Max: 0.25</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+            <option value="0.25">0.25</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span>Slide the waterproof drape under the client (1/4mk)</span
+          ><span>Max: 0.25</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+            <option value="0.25">0.25</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span
+            >Open the sterile catheterization pack on the tray using sterile
+            techniques (1/2mk)</span
+          ><span>Max: 0.5</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+            <option value="0.25">0.25</option>
+            <option value="0.5">0.5</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span>Put on sterile gloves (1/4mk)</span><span>Max: 0.25</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+            <option value="0.25">0.25</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span
+            >Place the sterile tray on the tray between the client’s thighs
+            (1/4mk)</span
+          ><span>Max: 0.25</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+            <option value="0.25">0.25</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span
+            >Test the catheter balloon by connecting the syringe to the balloon
+            port and insert the correct amount of fluid, inflating the balloon
+            (1mk)</span
+          ><span>Max: 1.0</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+            <option value="0.25">0.25</option>
+            <option value="0.5">0.5</option>
+            <option value="0.75">0.75</option>
+            <option value="1.0">1.0</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span
+            >Connect the drainage end of catheter to the urine bag (1/2mk)</span
+          ><span>Max: 0.5</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+            <option value="0.25">0.25</option>
+            <option value="0.5">0.5</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span
+            >Lubricate the tip of the catheter (about 1-2 inches) (1/2mk)</span
+          ><span>Max: 1.0</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+            <option value="0.25">0.25</option>
+            <option value="0.5">0.5</option>
+            <option value="0.75">0.75</option>
+            <option value="1.0">1.0</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span
+            >Using cotton balls held with forceps, clean both labia folds and
+            directly over the meatus (1/2mk)</span
+          ><span>Max: 0.5</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+            <option value="0.25">0.25</option>
+            <option value="0.5">0.5</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span
+            >Ask the client to take a deep breath and release it slowly as you
+            begin insertion ½</span
+          ><span>Max: 0.0</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span>Inserts catheter into the urethral opening correctly 1</span
+          ><span>Max: 1.0</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+            <option value="0.25">0.25</option>
+            <option value="0.5">0.5</option>
+            <option value="0.75">0.75</option>
+            <option value="1.0">1.0</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span>Inflate the balloon port with 10ml of water ½</span
+          ><span>Max: 10.0</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+            <option value="0.25">0.25</option>
+            <option value="0.5">0.5</option>
+            <option value="0.75">0.75</option>
+            <option value="1.0">1.0</option>
+            <option value="1.25">1.25</option>
+            <option value="1.5">1.5</option>
+            <option value="1.75">1.75</option>
+            <option value="2.0">2.0</option>
+            <option value="2.25">2.25</option>
+            <option value="2.5">2.5</option>
+            <option value="2.75">2.75</option>
+            <option value="3.0">3.0</option>
+            <option value="3.25">3.25</option>
+            <option value="3.5">3.5</option>
+            <option value="3.75">3.75</option>
+            <option value="4.0">4.0</option>
+            <option value="4.25">4.25</option>
+            <option value="4.5">4.5</option>
+            <option value="4.75">4.75</option>
+            <option value="5.0">5.0</option>
+            <option value="5.25">5.25</option>
+            <option value="5.5">5.5</option>
+            <option value="5.75">5.75</option>
+            <option value="6.0">6.0</option>
+            <option value="6.25">6.25</option>
+            <option value="6.5">6.5</option>
+            <option value="6.75">6.75</option>
+            <option value="7.0">7.0</option>
+            <option value="7.25">7.25</option>
+            <option value="7.5">7.5</option>
+            <option value="7.75">7.75</option>
+            <option value="8.0">8.0</option>
+            <option value="8.25">8.25</option>
+            <option value="8.5">8.5</option>
+            <option value="8.75">8.75</option>
+            <option value="9.0">9.0</option>
+            <option value="9.25">9.25</option>
+            <option value="9.5">9.5</option>
+            <option value="9.75">9.75</option>
+            <option value="10.0">10.0</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span
+            >Tug gently on the catheter after inflation to feel resistance
+            ½</span
+          ><span>Max: 0.0</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span>Secure the catheter to the upper thigh with a tape ¼</span
+          ><span>Max: 0.0</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span>keeping the bag at or below the bladder level ½</span
+          ><span>Max: 0.0</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span
+            >Remove the equipment and make the client comfortable in bed ¼</span
+          ><span>Max: 0.0</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+          </select>
+        </div>
+        <div class="activity-row">
+          <span>Documents procedure ¼</span><span>Max: 0.0</span
+          ><select class="score-select">
+            <option value="0.0">0.0</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <h4>Procedure Total: [Calculated]</h4>
+        <button>Save</button>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        document
+          .querySelectorAll(".activity-description")
+          .forEach(function (el) {
+            el.addEventListener("click", function () {
+              el.classList.toggle("expanded");
+            });
+          });
+      });
+    </script>
+  </body>
 </html>

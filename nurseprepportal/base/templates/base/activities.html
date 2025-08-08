@@ -1,0 +1,50 @@
+
+<div class="card-body p-0">
+                  <div id="activities-container">
+                    {% if selected_candidate and selected_station %}
+                      <form method="POST" action="{% url 'save_scores' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="matric_number" value="{{ selected_candidate.matric_number }}">
+                        <input type="hidden" name="station_id" value="{{ selected_station.id }}">
+
+                        <table class="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th>Description</th>
+                              <th>Max Score</th>
+                              <th>Score</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for activity in activities %}
+                              <tr>
+                                <td>{{ activity.description }}</td>
+                                <td>{{ activity.max_score }}</td>
+                                <td>
+                                  <select name="score_{{ activity.activity_id }}" class="score-select" data-activity-id="{{ activity.activity_id }}">
+                                    {% for option in activity.options %}
+                                      <option value="{{ option }}" {% if option == activity.score %}selected{% endif %}>{{ option }}</option>
+                                    {% endfor %}
+                                  </select>
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                                  
+                                    <div class="card-footer clearfix">
+                                      <span id="totalScore">0.00</span>
+                                      <button type="submit" class="btn btn-sm btn-primary float-end">
+                                        Save Scores
+                                      </button>
+                                    </div>
+                      </form>
+                    {% else %}
+                      <p>Please select a candidate to view activities.</p>
+                    {% endif %}
+
+
+                    </div>
+
+
+                </div>

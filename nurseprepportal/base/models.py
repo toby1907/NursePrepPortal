@@ -1,12 +1,18 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from django.core.exceptions import ValidationError
+
 # Create your models here.
 
 class Session(models.Model):
     name = models.CharField(max_length=100, unique=True)
     start_date = models.DateField()
     end_date = models.DateField()
+
+    def clean(self):
+        if self.end_date <= self.start_date:
+            raise ValidationError("End date must be after start date.")
 
     def __str__(self):
         return self.name
@@ -15,7 +21,7 @@ class Session(models.Model):
 class Candidate(models.Model):
     matric_number = models.CharField(max_length=20, unique=True)
     full_name = models.CharField(max_length=100)
-    passport = models.ImageField(upload_to='passports/')
+    passport = models.ImageField(upload_to='passports/', null=True, blank=True)
     session = models.ForeignKey(Session, on_delete=models.CASCADE, related_name='candidates')
 
     def __str__(self):
@@ -60,6 +66,12 @@ class Score(models.Model):
 class VivaScore(models.Model):
     candidate = models.OneToOneField(Candidate, on_delete=models.CASCADE)
     score = models.FloatField()
+
+    
+    def clean(self):
+        if self.score < 0 or self.score > 10:
+            raise ValidationError("Viva score must be between 0 and 10.")
+
 
     def __str__(self):
         return f"{self.candidate} - Viva: {self.score}"
