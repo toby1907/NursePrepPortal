@@ -1,0 +1,54 @@
+{% extends 'main.html' %}
+{% block content %}
+{% load static %}
+<div class="card">
+    <div class="card-header">
+        <h3>Batch Upload</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.upload_type.label_tag }}
+                {{ form.upload_type }}
+            </div>
+            <div class="mb-3">
+                {{ form.session.label_tag }}
+                {{ form.session }}
+            </div>
+            <div class="mb-3">
+                {{ form.csv_file.label_tag }}
+                {{ form.csv_file }}
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+        
+        <div class="mt-4">
+            <h5>CSV Format Requirements:</h5>
+            <div class="row">
+                <div class="col-md-4">
+                    <h6>Stations.csv</h6>
+                    <pre>name,description,level
+Medication Administration,"Proper medication procedures",200
+Wound Care,"Wound dressing techniques",300</pre>
+                </div>
+                <div class="col-md-4">
+                    <h6>Candidates.csv</h6>
+                    <pre>matric_number,full_name,level,passport_file
+NUR001,John Doe,200,john.jpg
+NUR002,Jane Smith,300,jane.jpg</pre>
+                </div>
+                <div class="col-md-4">
+                    <h6>Activities.csv</h6>
+                    <pre>session_name,station_name,description,max_score
+2023 Session,Medication Administration,Dosage calculation,10
+2023 Session,Wound Care,Sterile technique,12</pre>
+                </div>
+            </div>
+            <a href="{% static 'sample_files/batch_upload_samples.zip' %}" class="btn btn-secondary mt-3">
+                <i class="bi bi-download"></i> Download Sample Files
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

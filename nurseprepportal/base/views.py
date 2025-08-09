@@ -18,6 +18,13 @@ from django.views.decorators.http import require_POST
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 
+# Add this import at the top with your other imports
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
+from openpyxl.utils import get_column_letter
+from .models import GlobalSettings
+from django.db.models import Q
+
 def loginPage(request):
     page = 'login'
 
@@ -77,8 +84,23 @@ def dashboard(request):
     selected_station = None
     activities_data = []
 
+ # Get global settings
+    global_settings = GlobalSettings.objects.first()
+    
     candidates = Candidate.objects.all()
     stations = ProcedureStation.objects.all()
+
+    if global_settings:
+        if global_settings.active_session:
+            candidates = candidates.filter(session=global_settings.active_session)
+            stations = stations.filter(session=global_settings.active_session)
+            
+        if global_settings.active_level:
+            candidates = candidates.filter(level=global_settings.active_level)
+            stations = stations.filter(
+                Q(level=global_settings.active_level) | 
+                Q(level__isnull=True)
+            )
 
     if selected_station_id:
         selected_station = get_object_or_404(ProcedureStation, id=selected_station_id)
@@ -121,9 +143,10 @@ def dashboard(request):
         'stations': stations,
         'selected_station': selected_station,
         'activities': activities_data,
+        'global_settings': global_settings,
     }
 
-    return render(request, 'base/index copy 2.html', context)
+    return render(request, 'base/home.html', context)
 
 
 
@@ -167,8 +190,15 @@ def save_scores(request):
 
 @login_required(login_url='login')
 def viva_scoring_view(request):
-    current_session = Session.objects.latest('start_date')
-    candidates = Candidate.objects.filter(session=current_session)
+    global_settings = GlobalSettings.objects.first()
+    
+    # Get candidates based on global settings
+    candidates = Candidate.objects.all()
+    if global_settings:
+        if global_settings.active_session:
+            candidates = candidates.filter(session=global_settings.active_session)
+        if global_settings.active_level:
+            candidates = candidates.filter(level=global_settings.active_level)
 
     if request.method == 'POST':
         with transaction.atomic():
@@ -181,33 +211,48 @@ def viva_scoring_view(request):
                             candidate=candidate,
                             defaults={'score': score_value}
                         )
-        messages.success(request, f'Scores saved successfully.')
-        return redirect('viva_scores')  # or a success page
+        messages.success(request, 'Scores saved successfully.')
+        return redirect('viva_scores')
    
-    return render(request, 'base/viva.html', {'candidates': candidates})
+    return render(request, 'base/viva.html', {
+        'candidates': candidates,
+        'global_settings': global_settings
+    })
 
 
+from django.core.paginator import Paginator
 
 @login_required(login_url='login')
 def final_grade_report(request):
-    current_session = Session.objects.latest('start_date')
-    candidates = Candidate.objects.filter(session=current_session)
-    stations = ProcedureStation.objects.filter(session=current_session)
+    global_settings = GlobalSettings.objects.first()
+    
+    candidates = Candidate.objects.all()
+    stations = ProcedureStation.objects.all()
+    
+    if global_settings:
+        if global_settings.active_session:
+            candidates = candidates.filter(session=global_settings.active_session)
+            stations = stations.filter(session=global_settings.active_session)
+        if global_settings.active_level:
+            candidates = candidates.filter(level=global_settings.active_level)
+            stations = stations.filter(
+                Q(level=global_settings.active_level) | 
+                Q(level__isnull=True)
+            )
 
     report_data = []
-
     for candidate in candidates:
-    # Get or create VivaScore
         viva_score = VivaScore.objects.filter(candidate=candidate).first()
         viva = viva_score.score if viva_score else 0
 
-        # Get or create FinalGrade
-        final_grade, created = FinalGrade.objects.get_or_create(candidate=candidate, defaults={'viva': viva})
+        final_grade, created = FinalGrade.objects.get_or_create(
+            candidate=candidate, 
+            defaults={'viva': viva}
+        )
         if not created:
             final_grade.viva = viva
-        final_grade.save()  # This triggers calculate_total()
+        final_grade.save()
 
-        # Station scores
         station_scores = []
         for station in stations:
             total_score = Score.objects.filter(
@@ -221,18 +266,32 @@ def final_grade_report(request):
             'full_name': candidate.full_name,
             'station_scores': station_scores,
             'viva': viva,
-            'total': final_grade.total
+            'total': final_grade.total,
+            'level': candidate.get_level_display(),
         })
 
+    # Paginate report_data
+    paginator = Paginator(report_data, 20)  # Show 20 candidates per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
-    return render(request, 'base/final_grade_report.html', {'report_data': report_data,'stations': stations })
-
+    return render(request, 'base/final_grade_report.html', {
+        'page_obj': page_obj,
+        'stations': stations,
+        'global_settings': global_settings
+    })
 
 @login_required(login_url='login')
 @require_POST
 def recalculate_grades(request):
-    current_session = Session.objects.latest('start_date')
-    candidates = Candidate.objects.filter(session=current_session)
+    global_settings = GlobalSettings.objects.first()
+    
+    candidates = Candidate.objects.all()
+    if global_settings:
+        if global_settings.active_session:
+            candidates = candidates.filter(session=global_settings.active_session)
+        if global_settings.active_level:
+            candidates = candidates.filter(level=global_settings.active_level)
 
     for candidate in candidates:
         viva_score = VivaScore.objects.filter(candidate=candidate).first()
@@ -240,7 +299,7 @@ def recalculate_grades(request):
 
         final_grade, _ = FinalGrade.objects.get_or_create(candidate=candidate)
         final_grade.viva = viva
-        final_grade.save()  # Triggers total recalculation
+        final_grade.save()
 
     messages.success(request, "Grades recalculated successfully.")
     return redirect('final_grade_report')
@@ -248,13 +307,23 @@ def recalculate_grades(request):
 
 
 
-
 @login_required(login_url='login')
 def download_grade_report_pdf(request):
-    current_session = Session.objects.latest('start_date')
-    candidates = Candidate.objects.filter(session=current_session)
-    stations = ProcedureStation.objects.filter(session=current_session)
-
+    global_settings = GlobalSettings.objects.first()
+    
+    candidates = Candidate.objects.all()
+    stations = ProcedureStation.objects.all()
+    
+    if global_settings:
+        if global_settings.active_session:
+            candidates = candidates.filter(session=global_settings.active_session)
+            stations = stations.filter(session=global_settings.active_session)
+        if global_settings.active_level:
+            candidates = candidates.filter(level=global_settings.active_level)
+            stations = stations.filter(
+                Q(level=global_settings.active_level) | 
+                Q(level__isnull=True)
+            )
     report_data = []
     for candidate in candidates:
         viva_score = VivaScore.objects.filter(candidate=candidate).first()
@@ -302,14 +371,29 @@ from django.views.decorators.http import require_GET
 @login_required(login_url='login')
 @require_GET
 def get_activities_ajax(request):
+    global_settings = GlobalSettings.objects.first()
+    
     selected_matric = request.GET.get('matric_number')
     selected_station_id = request.GET.get('station_id')
 
     selected_candidate = Candidate.objects.filter(matric_number=selected_matric).first()
     selected_station = ProcedureStation.objects.filter(id=selected_station_id).first()
 
+    # Filter based on global settings
     candidates = Candidate.objects.all()
     stations = ProcedureStation.objects.all()
+    
+    if global_settings:
+        if global_settings.active_session:
+            candidates = candidates.filter(session=global_settings.active_session)
+            stations = stations.filter(session=global_settings.active_session)
+        if global_settings.active_level:
+            candidates = candidates.filter(level=global_settings.active_level)
+            stations = stations.filter(
+                Q(level=global_settings.active_level) | 
+                Q(level__isnull=True)
+            )
+
 
     activities_data = []
     if selected_station:
@@ -338,3 +422,171 @@ def get_activities_ajax(request):
         'activities_html': activities_html,
         'candidate_info_html': candidate_info_html,
     })
+
+
+
+# Add this view function (place it near your PDF download view)
+@login_required(login_url='login')
+def download_grade_report_excel(request):
+
+    global_settings = GlobalSettings.objects.first()
+    
+    candidates = Candidate.objects.all()
+    stations = ProcedureStation.objects.all()
+    
+    if global_settings:
+        if global_settings.active_session:
+            candidates = candidates.filter(session=global_settings.active_session)
+            stations = stations.filter(session=global_settings.active_session)
+        if global_settings.active_level:
+            candidates = candidates.filter(level=global_settings.active_level)
+            stations = stations.filter(
+                Q(level=global_settings.active_level) | 
+                Q(level__isnull=True)
+            )
+    # Create the Excel workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Final Grade Report"
+
+    # Create header row
+    headers = ["Matric Number", "Full Name"] + [station.name for station in stations] + ["Viva", "Total"]
+    ws.append(headers)
+
+    # Style header row
+    header_font = Font(bold=True, color="FFFFFF")
+    header_fill = PatternFill(start_color="4F81BD", end_color="4F81BD", fill_type="solid")
+    thin_border = Border(left=Side(style='thin'), 
+                         right=Side(style='thin'), 
+                         top=Side(style='thin'), 
+                         bottom=Side(style='thin'))
+    
+    for col_num, header in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.border = thin_border
+        cell.alignment = Alignment(horizontal='center')
+
+    # Add data rows
+    for candidate in candidates:
+        viva_score = VivaScore.objects.filter(candidate=candidate).first()
+        viva = viva_score.score if viva_score else 0
+        final_grade = FinalGrade.objects.get(candidate=candidate)
+        
+        row_data = [candidate.matric_number, candidate.full_name]
+        
+        # Add station scores
+        for station in stations:
+            total_score = Score.objects.filter(
+                candidate=candidate,
+                activity__station=station
+            ).aggregate(Sum('score'))['score__sum'] or 0
+            row_data.append(total_score)
+        
+        # Add viva and total
+        row_data.extend([viva, final_grade.total])
+        ws.append(row_data)
+
+    # Style data rows
+    for row in ws.iter_rows(min_row=2, max_row=ws.max_row, max_col=ws.max_column):
+        for cell in row:
+            cell.border = thin_border
+            if cell.column == ws.max_column:  # Total column
+                cell.font = Font(bold=True)
+                cell.fill = PatternFill(start_color="F2F2F2", end_color="F2F2F2", fill_type="solid")
+            if isinstance(cell.value, (int, float)):
+                cell.alignment = Alignment(horizontal='center')
+
+    # Auto-size columns
+    for col in ws.columns:
+        max_length = 0
+        column = col[0].column_letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = (max_length + 2) * 1.2
+        ws.column_dimensions[column].width = adjusted_width
+
+    # Create response
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="final_grade_report.xlsx"'
+    wb.save(response)
+
+    return response
+
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+
+@login_required
+def lockscreen(request):
+    # If user submits password on lockscreen
+    if request.method == 'POST':
+        password = request.POST.get('password')
+        user = authenticate(username=request.user.username, password=password)
+        if user is not None:
+            login(request, user)
+            next_url = request.POST.get('next', 'dashboard')
+            return redirect(next_url)
+        else:
+            # Return to lockscreen with error
+            return render(request, 'lockscreen.html', {'form': {'errors': True}})
+    
+    return render(request, 'base/lockscreen.html')
+
+from django.shortcuts import render, redirect
+from .forms import GlobalSettingsForm
+from .models import GlobalSettings
+
+def settings_view(request):
+
+    settings = GlobalSettings.objects.first() or GlobalSettings()
+    
+    if request.method == 'POST':
+        form = GlobalSettingsForm(request.POST, instance=settings)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')  # or your preferred page
+    else:
+        form = GlobalSettingsForm(instance=settings)
+    
+    return render(request, 'base/settings.html', {'form': form})
+
+# your_app/views.py
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import BatchUploadForm
+from .batch_upload import process_station_csv, process_candidate_csv, process_activity_csv,process_simplified_csv
+
+@login_required(login_url='login')
+def batch_upload(request):
+    if request.method == 'POST':
+        form = BatchUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                upload_type = form.cleaned_data['upload_type']
+                session = form.cleaned_data['session']  # Get session object
+                csv_file = request.FILES['csv_file']
+                
+                if upload_type == 'stations':
+                    process_station_csv(csv_file, session)
+                elif upload_type == 'candidates':
+                    process_simplified_csv(csv_file, session)
+                elif upload_type == 'activities':
+                    process_activity_csv(csv_file, session)
+                
+                messages.success(request, f'{upload_type.capitalize()} uploaded successfully!')
+                return redirect('dashboard')
+            
+            except Exception as e:
+                messages.error(request, f'Error processing CSV: {str(e)}')
+    else:
+        form = BatchUploadForm()
+    
+    return render(request, 'base/batch_upload.html', {'form': form})

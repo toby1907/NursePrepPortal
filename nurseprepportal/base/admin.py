@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django import forms
+
 
 
 from .models import (
@@ -8,13 +10,21 @@ from .models import (
     Activity,
     Score,
     VivaScore,
-    FinalGrade
+    FinalGrade,
+    GlobalSettings
 )
+
+
+class GlobalSettingsAdmin(admin.ModelAdmin):
+    def has_add_permission(self, request):
+        # Allow only one settings instance
+        return not GlobalSettings.objects.exists()
+
 
 
 # Register your models here.
 
-
+admin.site.register(GlobalSettings, GlobalSettingsAdmin)
 admin.site.register(Session)
 admin.site.register(Candidate)
 admin.site.register(ProcedureStation)

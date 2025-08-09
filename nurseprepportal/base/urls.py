@@ -14,6 +14,9 @@ urlpatterns = [
     path('download-pdf/', views.download_grade_report_pdf, name='download_grade_report_pdf'),
     path('index/', views.index, name="index"),
     path('ajax/get_activities/', views.get_activities_ajax, name='get_activities_ajax'),
-
+     path('download-grade-report/excel/', views.download_grade_report_excel, name='download_grade_report_excel'),
+     path('lockscreen/', views.lockscreen, name='lockscreen'),
+    path('settings/', views.settings_view, name='settings'),
+    path('batch-upload/', views.batch_upload, name='batch_upload'),
 
   ]
