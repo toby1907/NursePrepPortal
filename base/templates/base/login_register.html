@@ -1,33 +1,142 @@
-{%extends 'main.html' %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>NursePrepPortal | {% if page == 'login' %}Login{% else %}Register{% endif %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .centered-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+      .login-card {
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+      }
+      .form-control {
+        height: 45px;
+      }
+      .btn-block {
+        height: 45px;
+      }
+      /* Consistent checkbox styling */
+      .form-check-input {
+        width: 1em;
+        height: 1em;
+        margin-top: 0.15em;
+      }
+      /* Ensure consistent height for both forms */
+      .form-container {
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="centered-container">
+      <div class="login-card card card-outline card-primary">
+        <div class="card-header text-center bg-primary text-white">
+          <h2 class="mb-0"><b>NursePrep</b>Portal</h2>
+        </div>
+        <div class="card-body form-container">
+          {% if page == 'login' %}
+            <p class="text-center mb-4">Sign in to start your session</p>
+            <form method="POST" action="">
+              {% csrf_token %}
+              <div class="mb-3">
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                  <input type="text" name="username" class="form-control" placeholder="Username" required>
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                  <input type="password" name="password" class="form-control" placeholder="Password" required>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-8 d-flex align-items-center">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="remember">
+                    <label class="form-check-label" for="remember">Remember Me</label>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                </div>
+              </div>
+            </form>
 
-{% block content %}
-{%if page == 'login' %}
-<div>
-    <form method="POST" action="">
-        {%csrf_token%}
+            <div class="text-center mt-auto">
+              <a href="#" class="d-block mb-2">Forgot password?</a>
+              <a href="{% url 'register' %}" class="text-primary">Register new account</a>
+            </div>
 
-        <label>Username:</label>
-        <input type="text" name="username" placeholder="Enter Username" />
+          {% else %}
+            <p class="text-center mb-4">Create new account</p>
+            <form method="POST" action="">
+              {% csrf_token %}
+              {% for field in form %}
+              <div class="mb-3">
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="bi bi-{% if field.name == 'username' %}person-fill{% else %}lock-fill{% endif %}"></i>
+                  </span>
+                  {{field}}
+                </div>
+                {% for error in field.errors %}
+                  <div class="text-danger small mt-1">{{ error }}</div>
+                {% endfor %}
+              </div>
+              {% endfor %}
+              
+              <div class="mb-3 d-flex align-items-center">
+                <input type="checkbox" class="form-check-input me-2" id="agreeTerms">
+                <label class="form-check-label" for="agreeTerms">I agree to the <a href="#">terms</a></label>
+              </div>
+              
+              <button type="submit" class="btn btn-primary btn-block mb-3">Register</button>
+            </form>
 
-        <label>Password:</label>
-        <input type="password" name="password" placeholder="Enter Password"/>
-        <input type="submit" value="Login"/>
-    </form>
+            <div class="text-center mt-auto">
+              <a href="{% url 'login' %}" class="text-primary">Already have an account? Sign in</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
 
-    <p>haven't signed up yet?</p>
-    <a href="{% url 'register' %}"> Sign up</a>
-</div>
-{%else%}
-<div>
-    <form method="POST" action="">
-        {%csrf_token%}
-        {{form.as_p}}
-        <input type="submit" value="Register"/>
-    </form>
-    
-    <p>Already signed up?</p>
-    <a href="{% url 'login' %}">Login</a>
-</div>
-{%endif%}
-
-{% endblock content %}
+    <!-- jQuery & Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        // Add form-control class to text inputs only
+        $('input[type="text"], input[type="password"]').addClass('form-control');
+        
+        // Set consistent height for inputs
+        $('input[type="text"], input[type="password"]').css('height', '45px');
+        
+        // Set placeholders
+        $('input[name="username"]').attr('placeholder', 'Username');
+        $('input[name="password"]').attr('placeholder', 'Password');
+        $('input[name="password1"]').attr('placeholder', 'Password');
+        $('input[name="password2"]').attr('placeholder', 'Confirm Password');
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1 @@
+web: gunicorn nurseprepportal.wsgi --log-file -

@@ -67,9 +67,7 @@
       <!--begin::App Main-->
       <main class="app-main">
         <!--begin::App Content Header-->
-
-       
-      
+      <div>
         <div class="app-content-header">
           <!--begin::Container-->
 
@@ -92,9 +90,112 @@
         {% endif %}
       </div>
 
-    {% block content %}
+          <div class="container-fluid">
+            <!--begin::Row-->
+            <div class="row">
+              <!--station selection-->    
+              <div class="row">
+                <div class="col-sm-6">
+                  <label for="stationSelect" class="form-label h5">Select Station:</label>
+                  <select name="station_id" id="stationSelect" class="form-select">
+                    {% for station in stations %}
+                      <option value="{{ station.id }}" {% if selected_station and selected_station.id == station.id %}selected{% endif %}>
+                        {{ station.name }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-sm-6">
+                  <ol class="breadcrumb float-sm-end">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ selected_station.name }}</li>
+                  </ol>
+                </div>
+           </div>
+            <!--end::Row-->
+          </div>
+          <!--end::Container-->
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <!--begin::Container-->
         
-        {% endblock %}
+          <div class="container-fluid">
+            
+            <!--begin::Row-->
+            <div class="row align-items-center justify-content-between">
+  <!-- Label and Select Box Group -->
+             <div class="col-md-6 d-flex align-items-center">
+              <div class="col-sm-3 pe-1">Search candidate:</div>
+              <div class="col-sm-9">
+                <div class="search_select_box">
+                  <form method="get" id="candidateForm">
+                    <select class="selectpicker w-100 bg-primary"
+                          name="matric_number"
+                          data-live-search="true"
+                           id="candidateSelect">
+
+                    
+                    <!-- Placeholder option -->
+                    <option value="" disabled selected>[Not selected]</option>
+
+                    {% for candidate in candidates %}
+                      <option value="{{ candidate.matric_number }}"
+                        {% if selected_candidate and selected_candidate.matric_number == candidate.matric_number %}selected{% endif %}>
+                        {{ candidate.matric_number }}
+                      </option>
+                    {% endfor %}
+                  </select>
+
+
+                    {% if selected_station %}
+                      <input type="hidden" name="station_id" value="{{ selected_station.id }}">
+                    {% elif stations and stations|length > 0 %}
+                      <input type="hidden" name="station_id" value="{{ stations.0.id }}">
+                    {% endif %}
+                  </form>
+              </div>
+              </div>
+            </div>
+
+
+              <!-- Small Box Widget aligned to the right -->
+              <div class="col-lg-3 col-6 ms-auto">
+                <div id="candidate-info-container">
+                  {% include 'base/candidate_info.html' %}
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+          <!--end::Container-->
+
+          
+          <!--begining::activities-->
+
+          <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Activities</h3>
+                    <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-lte-toggle="card-collapse">
+                        <i data-lte-icon="expand" class="bi bi-plus-lg"></i>
+                        <i data-lte-icon="collapse" class="bi bi-dash-lg"></i>
+                      </button>
+                      <button type="button" class="btn btn-tool" data-lte-toggle="card-remove">
+                        <i class="bi bi-x-lg"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- /.card-header -->
+                   <div id="activities-container">{% include 'base/activities.html' %}</div> 
+                 
+        </div>
+        <!--end::App Content-->
+
+      </div> 
 
       </main>
       <!--end::App Main-->

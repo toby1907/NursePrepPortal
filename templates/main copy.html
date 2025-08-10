@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+{% load static %}
+<html>
+  <head>
+     <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>NursePrepPortal Dashboard</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media= 'screen' href="{% static 'styles/main.css' %}">
+   
+  </head>
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const toggleBtn = document.getElementById("toggleSidebar");
+    const sidebar = document.querySelector(".sidebar");
+    const main = document.querySelector(".main");
+
+    toggleBtn.addEventListener("click", function () {
+      sidebar.classList.toggle("collapsed");
+    });
+
+    // Dropdown toggle
+    document.querySelectorAll(".dropdown-toggle").forEach(function (toggle) {
+      toggle.addEventListener("click", function () {
+        const dropdown = toggle.nextElementSibling;
+        if (dropdown.style.display === "none" || dropdown.style.display === "") {
+          dropdown.style.display = "block";
+        } else {
+          dropdown.style.display = "none";
+        }
+      });
+    });
+
+     document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".activity-description").forEach(function (el) {
+      el.addEventListener("click", function () {
+        el.classList.toggle("expanded");
+      });
+    });
+  });
+  });
+</script>
+
+
+  <body> 
+    {% include 'navbar.html' %}
+     
+
+  <button id="toggleSidebar" style="margin: 10px;">☰</button>
+    <div class="layout">
+    
+       <div class="sidebar">
+  <h3>Menu</h3>
+
+  <div class="menu-item">
+  <strong class="dropdown-toggle" style="cursor:pointer;">Procedure</strong>
+  <div class="dropdown-content" style="display: none; margin-left: 10px;">
+    <ul>
+      {% if stations %}
+        {% for station in stations %}
+          <li>
+            <a href="{% url 'dashboard' %}?station_id={{ station.id }}{% if selected_candidate %}&matric_number={{ selected_candidate.matric_number }}{% endif %}"
+              class="{% if selected_station and selected_station.id == station.id %}active{% endif %}">
+              {{ station.name }}
+            </a>
+
+          </li>
+        {% endfor %}
+      {% else %}
+        <li style="color: gray;">No stations available</li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
+
+
+  <div class="menu-item">
+  <a href="{% url 'viva_scores' %}"><strong>Viva</strong></a>
+  </div>
+  <div class="menu-item">
+  <a href="{% url 'final_grade_report' %}"><strong>Result</strong></a>
+  </div>
+
+</div>
+
+
+      <div class="main">
+        {% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+    <li {% if message.tags %} class="{{message.tags}}" {% endif %}>{{ message}}
+        {% endfor %}
+    </li>
+  </ul>
+  {% endif %}
+        {% block content %}
+        
+        {% endblock %}
+      </div>
+    </div>
+
+  
+  </body>
+</html>

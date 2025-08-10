@@ -1,14 +1,13 @@
-from .models import ProcedureStation, Session
+from .models import ProcedureStation, Session,GlobalSettings
 
-def global_stations(request):
-    try:
-        current_session = Session.objects.latest('start_date')
-        stations = ProcedureStation.objects.filter(session=current_session)
-    except Session.DoesNotExist:
-        stations = []
-        current_session = None
-
+def global_settings(request):
+    """Provides global settings and active filtering"""
+    settings = GlobalSettings.objects.first()
+    active_session = settings.active_session if settings else None
+    active_level = settings.active_level if settings else None
+    
     return {
-        'stations': stations,
-        'current_session': current_session
+        'global_settings': settings,
+        'active_session': active_session,
+        'active_level': active_level
     }
