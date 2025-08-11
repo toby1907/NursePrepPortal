@@ -96,23 +96,12 @@ WSGI_APPLICATION = 'nurseprepportal.wsgi.application'
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Database configuration
-if os.getenv('RENDER'):
-    # Render PostgreSQL
-    import dj_database_url
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=os.getenv('DATABASE_URL'),
-            conn_max_age=600
-        )
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-else:
-    # Local SQLite
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+}
 
 
 # Password validation
