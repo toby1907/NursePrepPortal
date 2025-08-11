@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from .models import Session, Candidate, ProcedureStation, Activity
 
 def process_candidate_csv(file, session, level=None):
-    reader = csv.DictReader(TextIOWrapper(file))
+    reader = csv.DictReader(TextIOWrapper(file, encoding='utf-8-sig'))
     
     for row in reader:
         try:
@@ -35,7 +35,7 @@ def process_candidate_csv(file, session, level=None):
 
 def process_station_csv(file, session, level=None):
     """Process station CSV with optional level"""
-    reader = csv.DictReader(TextIOWrapper(file))
+    reader = csv.DictReader(TextIOWrapper(file, encoding='utf-8-sig'))
     for row in reader:
         try:
             ProcedureStation.objects.update_or_create(
