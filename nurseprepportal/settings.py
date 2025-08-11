@@ -91,21 +91,27 @@ WSGI_APPLICATION = 'nurseprepportal.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# Database - Uses Render PostgreSQL
-if DEBUG and 'DATABASE_URL' not in os.environ:
+
+# Base directory
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Database configuration
+if os.getenv('RENDER'):
+    # Render PostgreSQL
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL'),
+            conn_max_age=600
+        )
+    }
+else:
+    # Local SQLite
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
-    }
-else:
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=os.getenv('DATABASE_URL'),
-            conn_max_age=600,
-            ssl_require=not DEBUG
-        )
     }
 
 
