@@ -29,7 +29,7 @@ DEBUG = DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 
 RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
-ALLOWED_HOSTS = ['localhost', '*']
+ALLOWED_HOSTS = ['*', 'localhost']
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
