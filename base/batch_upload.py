@@ -6,33 +6,62 @@ from django.core.files import File
 from django.shortcuts import get_object_or_404
 from .models import Session, Candidate, ProcedureStation, Activity
 
-def process_candidate_csv(file, session, level=None):
-    reader = csv.DictReader(TextIOWrapper(file, encoding='utf-8-sig'))
-    
-    for row in reader:
-        try:
-            # Create candidate with form-selected session/level
-            candidate, created = Candidate.objects.update_or_create(
-                matric_number=row['matric_number'],
-                defaults={
-                    'full_name': row['full_name'],
-                    'session': session,
-                    'level': level or int(row['level']) if row.get('level') else level
-                }
-            )
-            
-            # Handle passport photo if provided
-            if created and row.get('passport_file'):
-                try:
-                    with open(row['passport_file'], 'rb') as f:
-                        candidate.passport.save(row['passport_file'], File(f))
-                except FileNotFoundError:
-                    print(f"Passport photo not found: {row['passport_file']}")
-                    
-        except Exception as e:
-            print(f"Error processing candidate {row}: {str(e)}")
-            continue
 
+def process_candidate_csv(file, session, level=None):
+    try:
+        # Create TextIOWrapper and keep reference
+        file_wrapper = TextIOWrapper(file, encoding='utf-8-sig')
+        
+        # Read first line to check format
+        first_line = file_wrapper.readline()
+        file_wrapper.seek(0)  # Rewind after peek
+        
+        # Determine if CSV has headers
+        has_headers = any(header in first_line.lower() 
+                         for header in ['matric', 'full_name', 'level'])
+        
+        if has_headers:
+            reader = csv.DictReader(file_wrapper)
+            required_headers = {'matric_number', 'full_name'}
+            
+            if not all(header in reader.fieldnames for header in required_headers):
+                raise ValueError(f"Missing required headers: {required_headers}")
+                
+            for row in reader:
+                try:
+                    Candidate.objects.update_or_create(
+                        matric_number=row['matric_number'].strip(),
+                        defaults={
+                            'full_name': row['full_name'].strip(),
+                            'session': session,
+                            'level': level or int(row.get('level', level))
+                        }
+                    )
+                except Exception as e:
+                    print(f"Error processing row: {row} - {str(e)}")
+        
+        else:
+            # Handle headerless CSV
+            file_wrapper.seek(0)
+            reader = csv.reader(file_wrapper)
+            for row in reader:
+                if len(row) >= 2:  # At least matric + name
+                    try:
+                        Candidate.objects.update_or_create(
+                            matric_number=row[0].strip(),
+                            defaults={
+                                'full_name': row[1].strip(),
+                                'session': session,
+                                'level': level or int(row[2]) if len(row) > 2 else level
+                            }
+                        )
+                    except Exception as e:
+                        print(f"Error processing row: {row} - {str(e)}")
+    
+    finally:
+        # Ensure file wrapper is closed
+        if 'file_wrapper' in locals():
+            file_wrapper.detach()  # Prevent closing the underlying file
 def process_station_csv(file, session, level=None):
     """Process station CSV with optional level"""
     reader = csv.DictReader(TextIOWrapper(file, encoding='utf-8-sig'))
