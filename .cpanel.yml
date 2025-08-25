@@ -1,0 +1,12 @@
+# .cpanel.yml
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/chrislan/nurseprepportal
+    - /bin/cp -R * $DEPLOYPATH
+    - cd $DEPLOYPATH
+    - source venv/bin/activate
+    - pip install -r requirements.txt
+    - python manage.py migrate --noinput
+    - python manage.py collectstatic --noinput
+    - touch passenger_wsgi.py
