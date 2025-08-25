@@ -45,6 +45,7 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
+            messages.success(request, 'Login successful')
             return redirect('dashboard')
         else:
             messages.error(request, 'Userername OR password does not exist')

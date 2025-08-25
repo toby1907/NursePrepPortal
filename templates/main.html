@@ -74,23 +74,26 @@
         <div class="app-content-header">
           <!--begin::Container-->
 
-                      
-         {% if messages %}
-          <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
-            {% for message in messages %}
-              <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header">
-                  <strong class="me-auto">Notification</strong>
-                  <small class="text-muted">just now</small>
-                  <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
+             {% if messages %}
+<!-- Toast Container - Shows only the last message -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+    {% for message in messages %}
+        {% if forloop.last %} {# Only show the last message #}
+        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
+            <div class="toast-header">
+                <strong class="me-auto">Notification</strong>
+                <small class="text-muted">just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
                 <div class="toast-body {% if message.tags %}{{ message.tags }}{% endif %}">
-                  {{ message }}
+                    {{ message }}
                 </div>
-              </div>
-            {% endfor %}
-          </div>
-        {% endif %}
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}         
+         
       </div>
 
     {% block content %}
@@ -270,12 +273,48 @@
 
 <!-- Toast Script (kept separate for clarity) -->
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const toastEl = document.getElementById('liveToast');
-    if (toastEl && toastEl.querySelector('.toast-body').textContent.trim() !== '') {
-      new bootstrap.Toast(toastEl).show();
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to show only the latest toast
+    function showLatestToast() {
+        const toastContainer = document.querySelector('.toast-container');
+        if (!toastContainer) return;
+        
+        // Get all toast elements
+        const toasts = toastContainer.querySelectorAll('.toast');
+        
+        if (toasts.length === 0) return;
+        
+        // Hide all toasts first
+        toasts.forEach(toast => {
+            const bsToast = bootstrap.Toast.getInstance(toast);
+            if (bsToast) {
+                bsToast.hide();
+            }
+        });
+        
+        // Remove all toasts from DOM after they're hidden
+        toasts.forEach(toast => {
+            toast.addEventListener('hidden.bs.toast', function() {
+                this.remove();
+            });
+        });
+        
+        // Show only the last (most recent) toast
+        const latestToast = toasts[toasts.length - 1];
+        const bsToast = new bootstrap.Toast(latestToast);
+        bsToast.show();
+        
+        // Automatically remove the toast after it's hidden
+        latestToast.addEventListener('hidden.bs.toast', function() {
+            this.remove();
+        });
     }
-  });
+    
+    // Call the function when messages are present
+    if (document.querySelector('.toast-container')) {
+        showLatestToast();
+    }
+});
 </script>
 
 
