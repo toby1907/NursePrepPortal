@@ -123,17 +123,57 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-    .font-monospace {
+.font-monospace {
         font-family: monospace;
         background-color: #f8f9fa;
         padding: 0.2rem 0.4rem;
         border-radius: 3px;
     }
-    .card-header {
+.card-header {
         padding: 1rem 1.5rem;
     }
-    .form-group {
+.form-group {
         margin-bottom: 1.5rem;
     }
+
+    /* Remove gray backgrounds and improve form styling */
+.card-body {
+    background-color: white; /* Ensures white background */
+    padding: 2rem;
+}
+
+.form-control, .form-select {
+    background-color: white !important; /* Force white input backgrounds */
+    border: 1px solid #dee2e6; /* Clean border */
+}
+
+.form-text.text-muted {
+    color: #6c757d !important; /* Better muted text color */
+}
+
+/* Improved spacing and focus states */
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* File upload styling */
+#id_csv_file {
+    padding: 0.5rem;
+}
+
+/* Sample format hint box */
+.font-monospace {
+    background-color: #f8f9fa; /* Light gray only for code hints */
+    padding: 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 0.25rem 0;
+}
+
 </style>
 {% endblock %}
