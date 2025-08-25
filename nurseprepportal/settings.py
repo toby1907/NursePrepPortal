@@ -30,7 +30,9 @@ DEBUG = DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 
 RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
-ALLOWED_HOSTS = ['*', 'localhost']
+ALLOWED_HOSTS = ['caosce.chrislanduniversity.edu.ng/',
+                 'www.caosce.chrislanduniversity.edu.ng/', 
+                 'localhost']
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
@@ -102,9 +104,12 @@ DATABASES = {
         
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'), # Your local MySQL password
+        # 'NAME': config('DB_NAME'),
+        # 'USER': config('DB_USER'),
+        # 'PASSWORD': config('DB_PASSWORD'), # Your local MySQL password
+        'NAME': os.environ.get('DB_NAME'),      # We'll set this in cPanel
+        'USER': os.environ.get('DB_USER'),      # We'll set this in cPanel
+        'PASSWORD': os.environ.get('DB_PASSWORD'),  # We'll set this in cPanel
         'HOST': 'localhost',
         'PORT': '3306',
     
